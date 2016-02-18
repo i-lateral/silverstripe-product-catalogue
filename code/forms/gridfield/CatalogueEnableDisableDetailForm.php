@@ -1,10 +1,10 @@
 <?php
 /**
  * Base class for editing a catlogue object.
- * 
+ *
  * Currently allows enabling or disabling of an object via additional buttons
  * added to the gridfield.
- * 
+ *
  * NOTE: The object being edited must implement a "Disabled" parameter
  * on it's DB fields.
  *
@@ -29,11 +29,11 @@ class CatalogueEnableDisableDetailForm_ItemRequest extends GridFieldDetailForm_I
         $form = parent::ItemEditForm();
         $fields = $form->Fields();
         $actions = $form->Actions();
-        
+
         if ($this->record->ID !== 0 && $this->record->canEdit()) {
             // Remove the disabled field
             $fields->removeByName("Disabled");
-            
+
             if ($this->record->isEnabled()) {
                 $actions->insertBefore(
                     FormAction::create(
@@ -66,7 +66,7 @@ class CatalogueEnableDisableDetailForm_ItemRequest extends GridFieldDetailForm_I
         }
 
         $form->saveInto($record);
-        
+
         $record->Disabled = 0;
         $record->write();
         $this->gridField->getList()->add($record);
@@ -76,12 +76,12 @@ class CatalogueEnableDisableDetailForm_ItemRequest extends GridFieldDetailForm_I
             $this->record->singular_name(),
             '"'.Convert::raw2xml($this->record->Title).'"'
         );
-        
+
         $form->sessionMessage($message, 'good');
         return $this->edit(Controller::curr()->getRequest());
     }
-    
-    
+
+
     public function doDisable($data, $form)
     {
         $record = $this->record;
@@ -91,7 +91,7 @@ class CatalogueEnableDisableDetailForm_ItemRequest extends GridFieldDetailForm_I
         }
 
         $form->saveInto($record);
-        
+
         $record->Disabled = 1;
         $record->write();
         $this->gridField->getList()->add($record);
@@ -101,7 +101,7 @@ class CatalogueEnableDisableDetailForm_ItemRequest extends GridFieldDetailForm_I
             $this->record->singular_name(),
             '"'.Convert::raw2xml($this->record->Title).'"'
         );
-        
+
         $form->sessionMessage($message, 'good');
         return $this->edit(Controller::curr()->getRequest());
     }

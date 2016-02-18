@@ -7,7 +7,7 @@
  */
 class CatalogueSiteConfigExtension extends DataExtension
 {
-    
+
     private static $has_one = array(
         'DefaultProductImage'    => 'Image'
     );
@@ -22,7 +22,7 @@ class CatalogueSiteConfigExtension extends DataExtension
                 _t("Catalogue.DefaultProductImage", 'Default product image')
             )
         );
-        
+
         // Add config sets
         $fields->addFieldToTab(
             'Root.Catalogue',

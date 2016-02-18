@@ -4,25 +4,25 @@
  * Base class for all product categories stored in the database. The
  * intention is to allow category objects to be extended in the same way
  * as a more conventional "Page" object.
- * 
+ *
  * This allows users familier with working with the CMS a common
  * platform for developing ecommerce type functionality.
- * 
+ *
  * @author i-lateral (http://www.i-lateral.com)
  * @package catalogue
  */
 class CatalogueCategory extends DataObject implements PermissionProvider
 {
-    
+
     /**
      * Description for this object that will get loaded by the website
      * when it comes to creating it for the first time.
-     * 
+     *
      * @var string
      * @config
      */
     private static $description = "A basic product category";
-    
+
     private static $db = array(
         "Title"             => "Varchar",
         "URLSegment"        => "Varchar",
@@ -62,17 +62,17 @@ class CatalogueCategory extends DataObject implements PermissionProvider
 
     /**
      * Is this object enabled?
-     * 
+     *
      * @return Boolean
      */
     public function isEnabled()
     {
         return ($this->Disabled) ? false : true;
     }
-    
+
     /**
      * Is this object disabled?
-     * 
+     *
      * @return Boolean
      */
     public function isDisabled()
@@ -84,7 +84,7 @@ class CatalogueCategory extends DataObject implements PermissionProvider
      * Return the link for this {@link SimpleProduct} object, with the
      * {@link Director::baseURL()} included.
      *
-     * @param string $action Optional controller action (method). 
+     * @param string $action Optional controller action (method).
      *  Note: URI encoding of this parameter is applied automatically through template casting,
      *  don't encode the passed parameter.
      *  Please use {@link Controller::join_links()} instead to append GET parameters.
@@ -97,7 +97,7 @@ class CatalogueCategory extends DataObject implements PermissionProvider
             $this->RelativeLink($action)
         );
     }
-    
+
     /**
      * Get the absolute URL for this page, including protocol and host.
      *
@@ -112,18 +112,18 @@ class CatalogueCategory extends DataObject implements PermissionProvider
             return Director::absoluteURL($this->Link($action));
         }
     }
-    
+
     /**
 	 * Return the link for this {@link Category}
 	 *
-	 * 
+	 *
 	 * @param string $action See {@link Link()}
 	 * @return string
 	 */
 	public function RelativeLink($action = null)
     {
         $base = $this->URLSegment;
-		
+
 		$return = $this->extend('updateRelativeLink', $base, $action);
 
         if($return && is_array($return))
@@ -233,7 +233,7 @@ class CatalogueCategory extends DataObject implements PermissionProvider
             ->Children()
             ->filter("Disabled", 0);
     }
-    
+
     /**
      * Return a list of products in that category that are not disabled
      *
@@ -245,7 +245,7 @@ class CatalogueCategory extends DataObject implements PermissionProvider
             ->Products()
             ->filter("Disabled", 0);
     }
-    
+
     /**
      * Return sorted products in thsi category that are enabled
      *
@@ -276,7 +276,7 @@ class CatalogueCategory extends DataObject implements PermissionProvider
                 "Title" => "ASC"
             );
         }
-        
+
         $ids = array($this->ID);
         $ids = array_merge($ids, $this->getDescendantIDList());
 
@@ -291,27 +291,27 @@ class CatalogueCategory extends DataObject implements PermissionProvider
 
     public function getCMSFields()
     {
-        
+
         // Get a list of available product classes
         $classnames = ClassInfo::getValidSubClasses("CatalogueCategory");
         $categories_array = array();
-        
+
         foreach ($classnames as $classname) {
             $description = Config::inst()->get($classname, 'description');
-            
+
             if ($classname == 'CatalogueCategory' && !$description) {
                 $description = self::config()->description;
             }
-                    
+
             $description = ($description) ? $classname . ' - ' . $description : $classname;
-            
+
             $categories_array[$classname] = $description;
         }
-        
+
         if (!$this->ID) {
             $controller = Controller::curr();
             $parent_id = $controller->request->getVar("ParentID");
-            
+
             $fields = new FieldList(
                 $rootTab = new TabSet("Root",
                     // Main Tab Fields
@@ -335,13 +335,13 @@ class CatalogueCategory extends DataObject implements PermissionProvider
                 $baseLink = Controller::join_links(
                     Director::absoluteBaseURL()
                 );
-                           
+
                 $url_field = SiteTreeURLSegmentField::create("URLSegment");
                 $url_field->setURLPrefix($baseLink);
             } else {
                 $url_field = TextField::create("URLSegment");
             }
-                
+
             $fields = new FieldList(
                 $rootTab = new TabSet("Root",
                     // Main Tab Fields
@@ -366,7 +366,7 @@ class CatalogueCategory extends DataObject implements PermissionProvider
                     )
                 )
             );
-            
+
             // Help text for MetaData on page content editor
             $metaFieldDesc
                 ->setRightTitle(
@@ -395,7 +395,7 @@ class CatalogueCategory extends DataObject implements PermissionProvider
                 )
             );
         }
-        
+
         $this->extend('updateCMSFields', $fields);
 
         return $fields;
@@ -437,18 +437,18 @@ class CatalogueCategory extends DataObject implements PermissionProvider
             }
         }
     }
-    
+
     public function requireDefaultRecords()
     {
         parent::requireDefaultRecords();
-        
+
         // Alter any existing recods that might have the wrong classname
         foreach (CatalogueCategory::get()->filter("ClassName", "CatalogueCategory") as $category) {
             $category->ClassName = "Category";
             $category->write();
         }
     }
-    
+
     public function providePermissions()
     {
         return array(

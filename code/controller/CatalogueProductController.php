@@ -11,8 +11,8 @@ class CatalogueProductController extends CatalogueController
 {
 
     /**
-     * Template names to be removed from the default template list 
-     * 
+     * Template names to be removed from the default template list
+     *
      * @var array
      * @config
      */
@@ -53,12 +53,12 @@ class CatalogueProductController extends CatalogueController
             $dataRecord->URLSegment = get_class($this);
             $dataRecord->ID = -1;
         }
-        
+
         $this->dataRecord = $dataRecord;
         $this->failover = $this->dataRecord;
         parent::__construct();
     }
-    
+
     protected function get_index_templates()
     {
         $classes = ClassInfo::ancestry($this->dataRecord->class);
@@ -73,10 +73,10 @@ class CatalogueProductController extends CatalogueController
                 $return[] = $class;
             }
         }
-        
+
         return $return;
     }
-    
+
     /**
      * The productimage action is used to determine the default image that will
      * appear related to a product
@@ -98,7 +98,7 @@ class CatalogueProductController extends CatalogueController
         if (!$image) {
             $image = $images->first();
         }
-            
+
         $this->extend("updateImageForProduct", $image);
 
         return $image;
@@ -110,32 +110,32 @@ class CatalogueProductController extends CatalogueController
     public function index()
     {
         $this->customise(array("ProductImage" => $this->getImageForProduct()));
-        
+
         $this->extend("onBeforeIndex");
-        
+
         return $this->renderWith($this->get_index_templates());
     }
-    
+
     /**
      * Get a list of templates to call and return a default render with
      */
     public function iid()
     {
         $this->customise(array("ProductImage" => $this->getImageForProduct()));
-        
+
         $this->extend("onBeforeIndex");
-        
+
         return $this->renderWith($this->get_index_templates());
     }
 
-    
-    
+
+
     /**
      * Create a form to associate with this product, by default it will
      * be empty, but is intended to be easily extendable to allow "add
      * item to cart", or "get a quote" functionality.
-     * 
-     * @return Form 
+     *
+     * @return Form
      */
     public function Form()
     {
@@ -146,9 +146,9 @@ class CatalogueProductController extends CatalogueController
             FieldList::create(),
             new RequiredFields(array())
         );
-        
+
         $this->extend("updateForm", $form);
-        
+
         return $form;
     }
 }

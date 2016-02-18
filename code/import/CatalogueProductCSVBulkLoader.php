@@ -8,7 +8,7 @@
  */
 class CatalogueProductCSVBulkLoader extends CsvBulkLoader
 {
-    
+
     public $columnMap = array(
         "Product"   => "ClassName",
         "ClassName" => "ClassName",
@@ -43,7 +43,7 @@ class CatalogueProductCSVBulkLoader extends CsvBulkLoader
         $object = DataObject::get_by_id($this->objectClass, $objID);
 
         $this->extend("onBeforeProcess", $object, $record, $columnMap, $results, $preview);
-        
+
         // Loop through all fields and setup associations
         foreach ($record as $key => $value) {
 
@@ -57,7 +57,7 @@ class CatalogueProductCSVBulkLoader extends CsvBulkLoader
                     $object->Categories()->add($category);
                 }
             }
-            
+
             // Find any Images (denoted by a 'ImageXX' column)
             if (strpos($key, 'Image') !== false && $key != "Images") {
                 $image = Image::get()
@@ -68,7 +68,7 @@ class CatalogueProductCSVBulkLoader extends CsvBulkLoader
                     $object->Images()->add($image);
                 }
             }
-            
+
             // Find any related products (denoted by a 'RelatedXX' column)
             if (strpos($key, 'Related') !== false && $key != "RelatedProducts") {
                 $product = Product::get()
@@ -88,13 +88,13 @@ class CatalogueProductCSVBulkLoader extends CsvBulkLoader
 
         return $objID;
     }
-    
+
     public static function importTaxPercent(&$obj, $val, $record)
     {
         $tax_rate = TaxRate::get()
             ->filter("Amount", $val)
             ->first();
-        
+
         if ($tax_rate) {
             $obj->TaxRateID = $tax_rate->ID;
         }

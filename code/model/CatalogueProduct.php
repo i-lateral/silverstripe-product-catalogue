@@ -4,33 +4,33 @@
  * Base class for all products stored in the database. The intention is
  * to allow Product objects to be extended in the same way as a more
  * conventional "Page" object.
- * 
+ *
  * This allows users familier with working with the CMS a common
  * platform for developing ecommerce type functionality.
- * 
+ *
  * @author i-lateral (http://www.i-lateral.com)
  * @package catalogue
  */
 class CatalogueProduct extends DataObject implements PermissionProvider
 {
-    
+
     /**
      * Determines if a product's stock ID will be auto generated if
      * not set.
-     * 
+     *
      * @config
      */
     private static $auto_stock_id = true;
-    
+
     /**
      * Description for this object that will get loaded by the website
      * when it comes to creating it for the first time.
-     * 
+     *
      * @var string
      * @config
      */
     private static $description = "A standard catalogue product";
-    
+
     private static $db = array(
         "Title"             => "Varchar(255)",
         "StockID"           => "Varchar",
@@ -41,7 +41,7 @@ class CatalogueProduct extends DataObject implements PermissionProvider
         "ExtraMeta"         => "HTMLText",
         "Disabled"          => "Boolean"
     );
-    
+
     private static $has_one = array(
         "TaxRate"           => "TaxRate"
     );
@@ -91,38 +91,38 @@ class CatalogueProduct extends DataObject implements PermissionProvider
     );
 
     private static $default_sort = '"Title" ASC';
-    
+
     /**
      * Is this object enabled?
-     * 
+     *
      * @return Boolean
      */
     public function isEnabled()
     {
         return ($this->Disabled) ? false : true;
     }
-    
+
     /**
      * Is this object disabled?
-     * 
+     *
      * @return Boolean
      */
     public function isDisabled()
     {
         return $this->Disabled;
     }
-    
+
     /**
      * Method that allows us to define in templates if we should show
      * price including tax, or excluding tax
-     * 
+     *
      * @return boolean
      */
     public function IncludesTax()
     {
         return Catalogue::config()->price_includes_tax;
     }
-    
+
     /**
      * Get a final price for this product. We make this a method so that
      * we can tap into extensions and allow third party modules to alter
@@ -133,15 +133,15 @@ class CatalogueProduct extends DataObject implements PermissionProvider
     public function getPrice()
     {
         $price = $this->BasePrice;
-        
+
         $new_price = $this->extend("updatePrice", $price);
         if ($new_price && is_array($new_price)) {
             $price = $new_price[0];
         }
-        
+
         return $price;
     }
-    
+
     /**
      * Get a final tax amount for this product. You can extend this
      * method using "UpdateTax" allowing third party modules to alter
@@ -152,22 +152,22 @@ class CatalogueProduct extends DataObject implements PermissionProvider
     public function getTax()
     {
         $price = $this->BasePrice;
-        
+
         // If tax is enabled in config, add it to the final price
         if ($this->TaxRateID && $this->TaxRate()->Amount) {
             $tax = ($price / 100) * $this->TaxRate()->Amount;
         } else {
             $tax = 0;
         }
-        
+
         $new_tax = $this->extend("updateTax", $tax);
         if ($new_tax && is_array($new_tax)) {
             $tax = $new_tax[0];
         }
-        
+
         return $tax;
     }
-    
+
     /**
      * Get the percentage amount of tax applied to this item
      *
@@ -177,7 +177,7 @@ class CatalogueProduct extends DataObject implements PermissionProvider
     {
         return ($this->TaxRateID) ? $this->TaxRate()->Amount : 0;
     }
-    
+
     /**
      * Get the final price of this product, including tax (if any)
      *
@@ -186,15 +186,15 @@ class CatalogueProduct extends DataObject implements PermissionProvider
     public function getPriceAndTax()
     {
         $price = $this->Price + $this->Tax;
-        
+
         $new_price = $this->extend("updatePriceAndTax", $price);
         if ($new_price && is_array($new_price)) {
             $price = $new_price[0];
         }
-        
+
         return $price;
     }
-    
+
     /**
      * Generate a string to go with the the product price. We can
      * overwrite the wording of this by using Silverstripes language
@@ -211,16 +211,16 @@ class CatalogueProduct extends DataObject implements PermissionProvider
         } else {
             $return = "";
         }
-        
+
         return $return;
     }
-    
-    
+
+
     /**
      * Return the link for this {@link SimpleProduct} object, with the
      * {@link Director::baseURL()} included.
      *
-     * @param string $action Optional controller action (method). 
+     * @param string $action Optional controller action (method).
      *  Note: URI encoding of this parameter is applied automatically through template casting,
      *  don't encode the passed parameter.
      *  Please use {@link Controller::join_links()} instead to append GET parameters.
@@ -233,7 +233,7 @@ class CatalogueProduct extends DataObject implements PermissionProvider
             $this->RelativeLink($action)
         );
     }
-    
+
     /**
      * Get the absolute URL for this page, including protocol and host.
      *
@@ -248,18 +248,18 @@ class CatalogueProduct extends DataObject implements PermissionProvider
             return Director::absoluteURL($this->Link($action));
         }
     }
-    
+
     /**
      * Return the link for this {@link Product}
      *
-     * 
+     *
      * @param string $action See {@link Link()}
      * @return string
      */
     public function RelativeLink($action = null)
     {
         $base = $this->URLSegment;
-		
+
 		$return = $this->extend('updateRelativeLink', $base, $action);
 
         if($return && is_array($return))
@@ -267,20 +267,20 @@ class CatalogueProduct extends DataObject implements PermissionProvider
         else
             return Controller::join_links($base, $action);
 	}
-    
-    
+
+
     /**
      * We use this to tap into the categories "isSection" setup,
      * essentially adding the product's first category to the list
-     * 
+     *
      * @param $include_parent Include the direct parent of this product
-     * @return ArrayList 
+     * @return ArrayList
      */
     public function getAncestors($include_parent = false)
     {
         $ancestors = ArrayList::create();
         $object    = $this->Categories()->first();
-        
+
         if($object) {
             if($include_parent) $ancestors->push($object);
 
@@ -288,12 +288,12 @@ class CatalogueProduct extends DataObject implements PermissionProvider
                 $ancestors->push($object);
             }
         }
-        
+
         $this->extend('updateAncestors', $ancestors, $include_parent);
 
         return $ancestors;
     }
-    
+
     public function getMenuTitle()
     {
         return $this->Title;
@@ -311,30 +311,30 @@ class CatalogueProduct extends DataObject implements PermissionProvider
             $images = $this->Images()->Sort('SortOrder');
         } elseif (SiteConfig::current_site_config()->DefaultProductImageID) {
             $default_image = SiteConfig::current_site_config()->DefaultProductImage();
-            
+
             $images = new ArrayList();
             $images->add($default_image);
         } else {
             $no_image = "assets/no-image.png";
             $no_image_path = Controller::join_links(BASE_PATH, $no_image);
-            
+
             // if no-image does not exist, copy to the assets folder
             if (!file_exists($no_image_path)) {
                 $curr_file = Controller::join_links(
                     BASE_PATH,
                     "catalogue/images/no-image.png"
                 );
-                
+
                 copy($curr_file, $no_image_path);
             }
-            
+
             $images = new ArrayList();
-            
+
             $default_image = new Image();
             $default_image->ID = -1;
             $default_image->Title = "No Image Available";
             $default_image->FileName = $no_image;
-            
+
             $images->add($default_image);
         }
 
@@ -352,7 +352,7 @@ class CatalogueProduct extends DataObject implements PermissionProvider
     public function Breadcrumbs($maxDepth = 20)
     {
         $items = array();
-        
+
         $ancestors = $this->getAncestors(true);
 
         if($ancestors->exists()) {
@@ -394,22 +394,22 @@ class CatalogueProduct extends DataObject implements PermissionProvider
         // Get a list of available product classes
         $classnames = ClassInfo::getValidSubClasses("CatalogueProduct");
         $product_array = array();
-        
+
         foreach ($classnames as $classname) {
             if ($classname != "CatalogueProduct") {
                 $description = Config::inst()->get($classname, 'description');
-                
+
                 if ($classname == 'Product' && !$description) {
                     $description = self::config()->description;
                 }
-                        
+
                 $description = ($description) ? $classname . ' - ' . $description : $classname;
-                
+
                 $product_array[$classname] = $description;
             }
         }
-        
-        
+
+
         // If we are creating a product, let us choose the product type
         if (!$this->ID) {
             $fields = new FieldList(
@@ -433,13 +433,13 @@ class CatalogueProduct extends DataObject implements PermissionProvider
                 $baseLink = Controller::join_links(
                     Director::absoluteBaseURL()
                 );
-                           
+
                 $url_field = SiteTreeURLSegmentField::create("URLSegment");
                 $url_field->setURLPrefix($baseLink);
             } else {
                 $url_field = TextField::create("URLSegment");
             }
-            
+
             $fields = new FieldList(
                 $rootTab = new TabSet("Root",
                     // Main Tab Fields
@@ -519,11 +519,11 @@ class CatalogueProduct extends DataObject implements PermissionProvider
     public function getCMSValidator()
     {
         $required = array("Title");
-        
+
         if (!$this->config()->auto_stock_id) {
             $required[] = "StockID";
         }
-        
+
         return new RequiredFields($required);
     }
 
@@ -542,7 +542,7 @@ class CatalogueProduct extends DataObject implements PermissionProvider
             "CatalogueProduct",
             "CatalogueCategory"
         );
-        
+
         if (class_exists("SiteTree")) {
             $objects_to_check[] = "SiteTree";
         }
@@ -615,26 +615,26 @@ class CatalogueProduct extends DataObject implements PermissionProvider
             $this->URLSegment = preg_replace('/-[0-9]+$/', null, $this->URLSegment) . '-' . $count;
             $count++;
         }
-        
+
         if ($this->ID && $this->config()->auto_stock_id && !$this->StockID) {
             $title = "";
-            
+
             foreach (explode("-", $this->URLSegment) as $string) {
                 $string = substr($string, 0, 1);
                 $title .= $string;
             }
-            
+
             $this->StockID = $title . "-" . $this->ID;
         }
     }
-    
+
     public function requireDefaultRecords()
     {
         parent::requireDefaultRecords();
-        
+
         $records = CatalogueProduct::get()
             ->filter("ClassName", "CatalogueProduct");
-        
+
         if ($records->exists()) {
             // Alter any existing recods that might have the wrong classname
             foreach ($records as $product) {
@@ -644,7 +644,7 @@ class CatalogueProduct extends DataObject implements PermissionProvider
             DB::alteration_message("Updated {$records->count()} Product records", 'obsolete');
         }
     }
-    
+
     public function providePermissions()
     {
         return array(
