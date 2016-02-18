@@ -36,9 +36,9 @@
                         <% end_if %>
                     </span>
                 </span>
-                <span class="tax"> 
+                <span class="tax">
                     <% if TaxString %>
-                        <span class="tax"> 
+                        <span class="tax">
                             {$TaxString}
                         </span>
                     <% end_if %>
@@ -48,7 +48,7 @@
             <div class="content">
                 $Content
             </div>
-            
+
             <div class="form">
                 $Form
             </div>
@@ -76,7 +76,7 @@
                                 {$Price.nice}
                             <% end_if %>
                         </span>
-                        
+
                         <% if TaxString %>
                             <span class="tax">
                                 {$TaxString}

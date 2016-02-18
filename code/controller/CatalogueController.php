@@ -32,17 +32,17 @@ abstract class CatalogueController extends Controller
         $this->dataRecord = $dataRecord;
         return $this;
     }
-    
+
     public function init()
     {
         parent::init();
-        
+
         // Use theme from the site config
         if (($config = SiteConfig::current_site_config()) && $config->Theme) {
             Config::inst()->update('SSViewer', 'theme', $config->Theme);
         }
     }
-    
+
     /**
      * Return the link to this controller, but force the expanded link to be returned so that form methods and
      * similar will function properly.
@@ -54,12 +54,12 @@ abstract class CatalogueController extends Controller
     {
         return $this->data()->Link(($action ? $action : true));
     }
-    
+
     /**
      * Return the title, description, keywords and language metatags.
-     * 
+     *
      * @todo Move <title> tag in separate getter for easier customization and more obvious usage
-     * 
+     *
      * @param boolean|string $includeTitle Show default <title>-tag, set to false for custom templating
      * @return string The XHTML metatags
      */
@@ -83,7 +83,7 @@ abstract class CatalogueController extends Controller
         if ($this->ExtraMeta) {
             $tags .= $this->ExtraMeta . "\n";
         }
-        
+
         if (Permission::check('CMS_ACCESS_CMSMain') && in_array('CMSPreviewable', class_implements($this)) && !$this instanceof ErrorPage) {
             $tags .= "<meta name=\"x-page-id\" content=\"{$this->ID}\" />\n";
             $tags .= "<meta name=\"x-cms-edit-link\" content=\"" . $this->CMSEditLink() . "\" />\n";
@@ -137,7 +137,7 @@ abstract class CatalogueController extends Controller
                 'Page'
             ));
     }
-    
+
     public function SiteConfig()
     {
         if (method_exists($this->dataRecord, 'getSiteConfig')) {

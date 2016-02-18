@@ -2,32 +2,32 @@
 
 /**
  * Object designed to allow injection of catalogue global settings into
- * templates without having to flood the base controller with methods   
- * 
+ * templates without having to flood the base controller with methods
+ *
  * @author i-lateral (http://www.i-lateral.com)
  * @package catalogue
  */
 class Catalogue extends ViewableData
 {
-    
+
     /**
      * Show price including tax in catalogue and product pages?
-     * 
+     *
      * @var Boolean
      * @config
      */
     private static $price_includes_tax = true;
-    
+
     /**
      * Use this setting to disable the frontend product and category
      * pages (useful if you are building only a product management
      * system, etc).
-     * 
+     *
      * @var Boolean
      * @config
      */
     private static $enable_frontend = true;
-    
+
     /**
      * Gets a list of all Categories, either top level (default) or
      * from a sub level

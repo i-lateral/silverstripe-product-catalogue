@@ -20,7 +20,7 @@ The catalogue module provides several variables to Controller. These
 variables should be available globally and accessed via:
 
     $Catalogue
-    
+
 Currently the catalogue variable provides the following additional
 variables:
 
@@ -41,7 +41,7 @@ your template as navigation, then you can use the following code:
 You can also get a list of products at any point by calling:
 
     <% loop $Catalogue.Products %>
-    
+
     <% end_loop %>
 
 You can also add the ID of a parent category for this list as an

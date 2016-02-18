@@ -9,21 +9,21 @@
  */
 class CatalogueAdmin extends ModelAdmin
 {
-    
+
     /**
      * Set the page length for products
-     * 
+     *
      * @config
      */
     private static $product_page_length = 20;
-    
+
     /**
      * Set the page length for categories
-     * 
+     *
      * @config
      */
     private static $category_page_length = 20;
-    
+
     private static $url_segment = 'catalogue';
 
     private static $menu_title = 'Catalogue';
@@ -45,14 +45,14 @@ class CatalogueAdmin extends ModelAdmin
     {
         parent::init();
     }
-    
+
     public function getExportFields()
     {
         $fields = array(
             "Title" => "Title",
             "URLSegment" => "URLSegment"
         );
-        
+
         if ($this->modelClass == 'Product') {
             $fields["StockID"] = "StockID";
             $fields["ClassName"] = "Type";
@@ -62,16 +62,16 @@ class CatalogueAdmin extends ModelAdmin
             $fields["Categories.first.Title"] = "Category1";
             $fields["Content"] = "Content";
         }
-        
+
         $this->extend("updateExportFields", $fields);
-        
+
         return $fields;
     }
 
     public function getList()
     {
         $list = parent::getList();
-        
+
         // Filter categories
         if ($this->modelClass == 'Category') {
             $parentID = $this->request->requestVar('ParentID');
@@ -81,7 +81,7 @@ class CatalogueAdmin extends ModelAdmin
 
             $list = $list->filter('ParentID', $parentID);
         }
-        
+
         $this->extend('updateList', $list);
 
         return $list;
@@ -91,18 +91,18 @@ class CatalogueAdmin extends ModelAdmin
     {
         $form = parent::getEditForm($id, $fields);
         $params = $this->request->requestVar('q');
-        
-        
+
+
         // Bulk manager
         $manager = new GridFieldBulkManager();
         $manager->removeBulkAction("unLink");
-        
+
         $manager->addBulkAction(
             'disable',
             'Disable',
             'CatalogueProductBulkAction'
         );
-        
+
         $manager->addBulkAction(
             'enable',
             'Enable',
@@ -126,8 +126,8 @@ class CatalogueAdmin extends ModelAdmin
                     $manager,
                     new CatalogueEnableDisableDetailForm()
                 );
-                
-            
+
+
             // Set the page length
             $field_config
                 ->getComponentByType('GridFieldPaginator')
@@ -144,7 +144,7 @@ class CatalogueAdmin extends ModelAdmin
                 $gridField->setList($list);
             }
         }
-        
+
         // Alterations for Hiarachy on product cataloge
         if ($this->modelClass == 'Category') {
             $gridField = $form->Fields()->fieldByName('Category');
@@ -170,7 +170,7 @@ class CatalogueAdmin extends ModelAdmin
                     $manager,
                     GridFieldOrderableRows::create('Sort')
                 );
-            
+
             // Set the page length
             $field_config
                 ->getComponentByType('GridFieldPaginator')

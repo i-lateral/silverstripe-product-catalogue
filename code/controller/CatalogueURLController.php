@@ -1,7 +1,7 @@
 <?php
 
 /**
- * URLController determins what part of Silverstripe (framework, 
+ * URLController determins what part of Silverstripe (framework,
  * Catalogue or CMS) will handle the current URL.
  *
  * @author i-lateral (http://www.i-lateral.com)
@@ -9,12 +9,12 @@
  */
 class CatalogueURLController extends Controller
 {
-    
+
     public function init()
     {
         parent::init();
     }
-    
+
     /**
      * Get the appropriate {@link CatalogueProductController} or
      * {@link CatalogueProductController} for handling the relevent
@@ -32,13 +32,13 @@ class CatalogueURLController extends Controller
             $controller = "CatalogueCategoryController";
         } else {
             $ancestry = ClassInfo::ancestry($object->class);
-            
+
             while ($class = array_pop($ancestry)) {
                 if (class_exists($class . "_Controller")) {
                     break;
                 }
             }
-            
+
             // Find the controller we need, or revert to a default
             if ($class !== null) {
                 $controller = "{$class}_Controller";
@@ -52,13 +52,13 @@ class CatalogueURLController extends Controller
         if ($action && class_exists($controller . '_' . ucfirst($action))) {
             $controller = $controller . '_' . ucfirst($action);
         }
-        
+
         return class_exists($controller) ? Injector::inst()->create($controller, $object) : $object;
     }
 
     /**
      * Check catalogue URL's before we get to the CMS (if it exists)
-     * 
+     *
      * @param SS_HTTPRequest $request
      * @param DataModel|null $model
      * @return SS_HTTPResponse
@@ -68,25 +68,25 @@ class CatalogueURLController extends Controller
         $this->request = $request;
 		$this->setDataModel($model);
         $catalogue_enabled = Catalogue::config()->enable_frontend;
-		
+
 		$this->pushCurrent();
 
         // Create a response just in case init() decides to redirect
         $this->response = new SS_HTTPResponse();
 
         $this->init();
-        
+
         // If we had a redirection or something, halt processing.
         if ($this->response->isFinished()) {
             $this->popCurrent();
             return $this->response;
         }
-        
+
         // If DB is not present, build
         if (!DB::isActive() || !ClassInfo::hasTable('CatalogueProduct') || !ClassInfo::hasTable('CatalogueCategory')) {
             return $this->response->redirect(Director::absoluteBaseURL() . 'dev/build?returnURL=' . (isset($_GET['url']) ? urlencode($_GET['url']) : null));
         }
-        
+
         $urlsegment = $request->param('URLSegment');
 
         $this->extend('onBeforeInit');
@@ -99,12 +99,12 @@ class CatalogueURLController extends Controller
         if (class_exists('Translatable')) {
             Translatable::disable_locale_filter();
         }
-        
+
         $filter = array(
             'URLSegment' => $urlsegment,
             'Disabled' => 0
         );
-        
+
         if($catalogue_enabled && $object = CatalogueProduct::get()->filter($filter)->first()) {
             $controller = $this->controller_for($object);
         } elseif($catalogue_enabled && $object = CatalogueCategory::get()->filter($filter)->first()) {
@@ -114,11 +114,11 @@ class CatalogueURLController extends Controller
         } else {
             $controller = Controller::create();
         }
-        
+
         if (class_exists('Translatable')) {
             Translatable::enable_locale_filter();
         }
-        
+
         $result = $controller->handleRequest($request, $model);
 
         $this->popCurrent();

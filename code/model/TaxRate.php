@@ -3,16 +3,16 @@
 /**
  * A tax rate can be added to a product and allows you to map a product
  * to a percentage of tax.
- * 
+ *
  * If added to a product, the tax will then be added to the price
- * automatically. 
- * 
+ * automatically.
+ *
  * @author i-lateral (http://www.i-lateral.com)
  * @package catalogue
  */
 class TaxRate extends DataObject
 {
-    
+
     /**
      * @config
      */
@@ -21,7 +21,7 @@ class TaxRate extends DataObject
         "Amount"=> "Decimal",
         "Code"  => "Varchar"
     );
-    
+
     public function getCMSValidator()
     {
         return new RequiredFields(array(
@@ -29,10 +29,10 @@ class TaxRate extends DataObject
             "Amount"
         ));
     }
-    
+
     public function requireDefaultRecords()
     {
-        
+
         // If no tax rates, setup some defaults
         if (!TaxRate::get()->exists()) {
             $vat = TaxRate::create();
@@ -41,14 +41,14 @@ class TaxRate extends DataObject
             $vat->Code = "T1";
             $vat->write();
             DB::alteration_message('VAT tax rate created.', 'created');
-            
+
             $reduced = TaxRate::create();
             $reduced->Title = "Reduced rate";
             $reduced->Amount = 5;
             $reduced->Code = "T2";
             $reduced->write();
             DB::alteration_message('Reduced tax rate created.', 'created');
-            
+
             $zero = TaxRate::create();
             $zero->Title = "Zero rate";
             $zero->Amount = 0;
@@ -56,7 +56,7 @@ class TaxRate extends DataObject
             $zero->write();
             DB::alteration_message('Zero tax rate created.', 'created');
         }
-        
+
         parent::requireDefaultRecords();
     }
 }

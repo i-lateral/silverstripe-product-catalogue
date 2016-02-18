@@ -33,29 +33,29 @@ CatalogueProduct and CatalogueCategory) object to your "mysite" folder.
 For example:
 
     /projectroot/mysite/code/Product.php
-    
+
     <?php
-    
+
     class Product extends CatalogueProduct {
-    
+
       private static $db = array(
           "StockLevel" => "Int"
       );
-    
+
     }
-    
+
     /projectroot/mysite/code/Category.php
-    
+
     <?php
-    
+
     class Category extends CatalogueCategory {
-    
+
       private static $has_one = array(
           "Image" => "Image"
       );
-    
+
     }
-    
+
 **Note** You will need to add this in order to add a product through the
 admin.
 
@@ -64,24 +64,24 @@ Catagory_Controller object to your mysite folder that extend
 CatalogueProductController and CatalogueCategoryController, EG:
 
     /projectroot/mysite/code/Product_Controller.php
-    
+
     <?php
-    
-    class Product_Controller extends CatalogueProductController {    
-    
+
+    class Product_Controller extends CatalogueProductController {
+
         public function index() {
             // Some stuff happens here
             return parent::index();
         }
-    
+
     }
-    
+
     /projectroot/mysite/code/Category_Controller.php
-    
+
     <?php
-    
+
     class Category_Controller extends CatalogueCategoryController {
-        
+
         public function index() {
             // Some stuff happens here
             return parent::index();
@@ -96,7 +96,7 @@ and categories. To do this, log into your admin, you should now see a
 "Catalogue" tab to the left. Click this.
 
 Once in the Catalogue admin, you will see "Products" and "Categories" in
-the top right. From here you can fairly easily add new Products and 
+the top right. From here you can fairly easily add new Products and
 Categories.
 
 ### Adding nested Categories

@@ -51,7 +51,7 @@ class CatalogueCategoryController extends CatalogueController
             $dataRecord->URLSegment = get_class($this);
             $dataRecord->ID = -1;
         }
-        
+
         $this->dataRecord = $dataRecord;
         $this->failover = $this->dataRecord;
         parent::__construct();
@@ -81,7 +81,7 @@ class CatalogueCategoryController extends CatalogueController
 
         return $this->renderWith($return);
     }
-    
+
     /**
      * Returns a fixed navigation menu of the given level.
      * @return SS_List
